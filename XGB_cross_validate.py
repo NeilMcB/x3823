@@ -71,7 +71,7 @@ def main(args):
             xgbc = xgb.XGBClassifier(max_depth=max_depth, learning_rate=learning_rate, n_estimators=n_estimators)
             # Train model
             print('*** Training model for run: {}, cv {} of {} ***'.format(run, i+1, len(skf)))
-            print('   *** Training events: {}   Test events: {} ***.'format(len(df_train_cv), len(df_test_cv)))
+            print('   *** Training events: {}   Test events: {} ***'.format(len(df_train_cv), len(df_test_cv)))
             xgbc.fit(df_train_cv[l_training_vars], df_train_cv['class'])
             # Predict probabilities
             df_train_cv['prob'] = xgbc.predict_proba(df_train_cv[l_training_vars])[:,1]  # Returns (1-p, p)
