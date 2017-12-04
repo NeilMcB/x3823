@@ -65,16 +65,17 @@ def main(args):
         skf = StratifiedKFold(df_train['class'].as_matrix(), n_folds=10)
         for i, (train_index, test_index) in enumerate(skf):
             # Split into training and test sets
-            df_train_cv = df_train.iloc[train_index].copy()
-            df_test_cv  = df_train.iloc[test_index].copy()
+            df_train_cv = df_train.iloc[train_index].copy().sample(frac=1)
+            df_test_cv  = df_train.iloc[test_index].copy().sample(frac=1)
             # Initialise model
             xgbc = xgb.XGBClassifier(max_depth=max_depth, learning_rate=learning_rate, n_estimators=n_estimators)
             # Train model
             print('*** Training model for run: {}, cv {} of {} ***'.format(run, i+1, len(skf)))
+            print('   *** Training events: {}   Test events: {} ***.format'(df_train_cv.len(), df_test_cv.len()))
             xgbc.fit(df_train_cv[l_training_vars], df_train_cv['class'])
             # Predict probabilities
             df_train_cv['prob'] = xgbc.predict_proba(df_train_cv[l_training_vars])[:,1]  # Returns (1-p, p)
-            df_test_cv['prob'] = xgbc.predict_proba(df_test_cv[l_training_vars])[:,1]
+            df_test_cv['prob']  = xgbc.predict_proba(df_test_cv[l_training_vars])[:,1]
             ### Find optimal cut
             print('   *** Determining optimal cut ***')
             # Optimise the probability cut
@@ -100,7 +101,7 @@ def main(args):
                 eff = signal_efficiency_all
                 a   = 5. # expected significance
                 # Background events, scaled to 40MeV window about B peak, considering only those in X(3823) region
-                B  = df_train_cv[((df_train_cv['prob'] > prob_threshold)) & ((df_train_cv['scaledmass'] > 5400.) & (df_train_cv['scaledmass'] < 5450.)) & ((df_train_cv['mjpipi'] > 3773) & (df_train_cv['mjpipi'] < 3873))].shape[0] * .8            
+                B  = df_train_cv[(df_train_cv['prob'] > prob_threshold) & ((df_train_cv['scaledmass'] > 5400.) & (df_train_cv['scaledmass'] < 5450.)) & ((df_train_cv['mjpipi'] > 3773) & (df_train_cv['mjpipi'] < 3873))].shape[0] * .8            
                 s0 = float(args.sig_yield)
                 cut_scores.append((s0 * eff) / sqrt((s0 * eff) + B))
             # Find optimal cut
@@ -111,6 +112,8 @@ def main(args):
             test_acc  = float(df_test_cv [(( df_test_cv['prob'] > prob_threshold) & ( df_test_cv['class'] == 1)) | (( df_test_cv['prob'] < prob_threshold) & ( df_test_cv['class'] == 0))].shape[0]) / float(df_test_cv.shape[0])
             print('   *** Training accuracy: {:.3f} ***'.format(train_acc))
             print('   ***  Testing accuracy: {:.3f} ***'.format(test_acc))
+            print('   *** Signal efficiencies, all: {:.3f}  mcp: {:.3f}  mcx: {:.3f}'.format(sig_effs_all[cut_index], sig_effs_mcj[cut_index], sig_effs_mcx[cut_index]))
+
             cv_train_accs.append(train_acc)
             cv_test_accs .append(test_acc)
 
