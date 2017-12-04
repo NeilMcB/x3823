@@ -192,9 +192,9 @@ void fitMCx38722TG(std::string filename="../data/mcx_Qcut_vetos.root",
     // Variables for DCB shape
     RooRealVar* sig = new RooRealVar("sig", "sig", 2., 1., 5.);
     RooRealVar* nL  = new RooRealVar("nL", "nL", 1.); nL->setConstant(true); // We expect this value from QED
-    RooRealVar* nR  = new RooRealVar("nR", "nR", 2.5, .5, 20.);
-    RooRealVar* aL  = new RooRealVar("aL", "aL", 2., .5, 10.); 
-    RooRealVar* aR  = new RooRealVar("aR", "aR", 3., .5, 10.); 
+    RooRealVar* nR  = new RooRealVar("nR", "nR", 20.); nR->setConstant(true);
+    RooRealVar* aL  = new RooRealVar("aL", "aL", 2.368); aL->setConstant(true);
+    RooRealVar* aR  = new RooRealVar("aR", "aR", 1.18);  aR->setConstant(true);
     // Vars for Breit-Wigner
     RooRealVar* ma = new RooRealVar("ma", "ma", 3096.916);
     RooRealVar* mb = new RooRealVar("mb", "mb", 507.);
@@ -276,7 +276,7 @@ void fitMCx38722TG(std::string filename="../data/mcx_Qcut_vetos.root",
     can1->SaveAs("resolution_fit_x_2TG.pdf");
 }
 
-void fitData2CB(std::string filename="../data/data_Qcut_vetos.root", 
+void fitData2TG(std::string filename="../data/data_Qcut_vetos.root", 
                 std::string treename="DecayTree", std::string mbranch="mjpipi",
                 double minmass = 3666., double maxmass = 3706.,
                 double fval  = 0.7    , bool fixf  = true,   
