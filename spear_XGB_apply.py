@@ -22,6 +22,8 @@ def fit_doubleCB(a_mc_x, a_data, out_path, s_info=''):
     a_fit_data = a_data.astype(dtype=[('b_mass'   , np.float)])
     # Estimate sig/bkg yields
     max_yield_est = a_fit_data.shape[0]                         # max possible signal yield
+    print(type((a_fit_data > 5350)))
+    exit()
     bkg_yield_est = len(a_fit_data[a_fit_data > 5350]) * 4.     # estimate background from sideband
     # Create tree for fitting
     t_fit_data = root_numpy.array2tree(a_fit_data)
@@ -294,8 +296,6 @@ def main(args):
     ### Estimate signal yield - all data
     d_sig_est_alldata = fit_doubleCB(pd.concat([df_mc_x, df_mc_p])['scaledmass'].as_matrix(), df_data['scaledmass'].as_matrix(), out_path, s_info='alldata_signal_est')
     ### Estimate signal yield - X region
-    print(args.s0)
-    exit()
     if args.s0 is not None:
         s0 = int(args.s0)
     else:
