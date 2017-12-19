@@ -31,14 +31,14 @@ void finalize(TTree* cutTree, TFile* output){
 }
 
 /* Now the main business */
-std::string preprocess(std::string fileName, std::string treeName = "DecayTree", std::string trailer = "_cut.root"){
+string preprocess(std::string fileName, std::string treeName = "DecayTree", std::string trailer = "_cut.root"){
 
   // get the input
   TChain* decaytree = new TChain(treeName.c_str());
   decaytree->Add(fileName.c_str());
 	
   // make the output file name 
-  std::string outputName = createOutputName(fileName, trailer);
+  string outputName = createOutputName(fileName, trailer);
  
   // make the output file
   TFile* outFile = openOutput(treeName,fileName,outputName); 
@@ -47,11 +47,11 @@ std::string preprocess(std::string fileName, std::string treeName = "DecayTree",
   /*** Cuts to the data ***/
 
   // prepare range of cuts to the data
-  cutString1 = "(mjpipi - 3096.90 - mpipi < 500)";                               // Q factor
-  cutString2 = "(!(((mppp > 5264) && (mppp < 5294)) && (kaon_ProbNNpi > 0.4)))"; // Kaon -> Pion misidentification in B mass region  
-  cutString3 = "(!((scaledmass > 5400) && ((mjpk > 5264) && (mjpk < 5294))))";   // Remove B -> J/psi K* signal from upper sideband  
-  cutString4 = "(scaledmass < 5400)";                                            // Remove sideband
-  cutString  = cutString1 + " && " + cutString2 + " && " + cutString3 + " && " + cutString4; // Combine
+  string cutString1 = "(mjpipi - 3096.90 - mpipi < 500)";                               // Q factor
+  string cutString2 = "(!(((mppp > 5264) && (mppp < 5294)) && (kaon_ProbNNpi > 0.4)))"; // Kaon -> Pion misidentification in B mass region  
+  string cutString3 = "(!((scaledmass > 5400) && ((mjpk > 5264) && (mjpk < 5294))))";   // Remove B -> J/psi K* signal from upper sideband  
+  string cutString4 = "(scaledmass < 5400)";                                            // Remove sideband
+  string cutString  = cutString1 + " && " + cutString2 + " && " + cutString3 + " && " + cutString4; // Combine
   // apply to data
   TCut cut = cutString.c_str();
   TTree* newtree = decaytree->CopyTree(cut);
@@ -100,7 +100,7 @@ std::string preprocess(std::string fileName, std::string treeName = "DecayTree",
     ipchi2s.push_back(k_ip);
     ipchi2s.push_back(mup_ip);
     ipchi2s.push_back(mum_ip);
-    sort(ipchi2s.begin(), end());
+    sort(ipchi2s.begin(), ipchi2s.end());
 
     // convert to log values and store
     ip1 = ipchi2s[0]; log_ip1 = TMath::Log(ip1); branch_log_ip1->Fill();
@@ -111,11 +111,11 @@ std::string preprocess(std::string fileName, std::string treeName = "DecayTree",
 
     // convert bplus vars to log and store
     log_ipb = TMath::Log(bp_ip); branch_log_ipb->Fill();
-    log_fdb = TMath::Log(bp_fp); branch_log_fdb->Fill();
+    log_fdb = TMath::Log(bp_fd); branch_log_fdb->Fill();
 
     // store muon pt as max and min
-    mu_PT_max = max(mup_pt, mum_pt); branch_mu_pt_max->Fill();
-    mu_PT_min = min(mup_pt, mum_pt); branch_mu_pt_min->Fill();
+    mu_pt_max = max(mup_pt, mum_pt); branch_mu_pt_max->Fill();
+    mu_pt_min = min(mup_pt, mum_pt); branch_mu_pt_min->Fill();
   }
 
   finalize(newtree,outFile);  
