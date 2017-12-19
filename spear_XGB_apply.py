@@ -294,6 +294,8 @@ def main(args):
     ### Estimate signal yield - all data
     d_sig_est_alldata = fit_doubleCB(pd.concat([df_mc_x, df_mc_p])['scaledmass'].as_matrix(), df_data['scaledmass'].as_matrix(), out_path, s_info='alldata_signal_est')
     ### Estimate signal yield - X region
+    print(args.s0)
+    exit()
     if args.s0 is not None:
         s0 = int(args.s0)
     else:
