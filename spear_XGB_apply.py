@@ -289,8 +289,7 @@ def main(args):
     print('   ***     Data events: %d ***'%(df_data .shape[0]))
 
     # Dictionaries for storing information on each run
-    d_run_info = {}
-    d_roc_plot = {}
+    d_info = {}
 
     ### Estimate signal yield - all data
     d_sig_est_alldata = fit_doubleCB(pd.concat([df_mc_x, df_mc_p])['scaledmass'].as_matrix(), df_data['scaledmass'].as_matrix(), out_path, s_info='alldata_signal_est')
@@ -305,12 +304,9 @@ def main(args):
         print("*** Expected X(3872) signal yield: %d ***"%(d_sig_est_x['data_sig_yield']))
         print("*** Expected X(3823) signal yield: %d ***"%(float(d_sig_est_x['data_sig_yield'])/20.))
         s0 = float(d_sig_est_x['data_sig_yield'])/20.
-        d_run_info['sig_est_x_reg'] = d_sig_est_x
+        d_info['sig_est_x_reg'] = d_sig_est_x
     
-
-    print('*** Performing run %s ***'%(run))
-    d_run_info[run] = {}
-    d_roc_plot[run] = {}
+    d_info = {}
 
     out_path_plots = out_path+'plots/'
     if not os.path.exists(out_path_plots):
@@ -329,10 +325,10 @@ def main(args):
         cuts = np.linspace(.0, 1., 200, endpoint=False)
         for prob_threshold in cuts:
             # Determine how many predictions are correct
-            signal_efficiency_mcx = float(df_train[(df_train['prob_'+run] > prob_threshold) & (df_train['cat']   == 'mc_x')].shape[0]) / float(df_train[df_train['cat']   == 'mc_x'].shape[0])
-            signal_efficiency_mcp = float(df_train[(df_train['prob_'+run] > prob_threshold) & (df_train['cat']   == 'mc_p')].shape[0]) / float(df_train[df_train['cat']   == 'mc_p'].shape[0])
-            signal_efficiency_all = float(df_train[(df_train['prob_'+run] > prob_threshold) & (df_train['class'] == 1     )].shape[0]) / float(df_train[df_train['class'] == 1     ].shape[0])
-            background_rejection  = float(df_train[(df_train['prob_'+run] > prob_threshold) & (df_train['class'] == 0     )].shape[0]) / float(df_train[df_train['class'] == 0     ].shape[0])
+            signal_efficiency_mcx = float(df_train[(df_train['prob'] > prob_threshold) & (df_train['cat']   == 'mc_x')].shape[0]) / float(df_train[df_train['cat']   == 'mc_x'].shape[0])
+            signal_efficiency_mcp = float(df_train[(df_train['prob'] > prob_threshold) & (df_train['cat']   == 'mc_p')].shape[0]) / float(df_train[df_train['cat']   == 'mc_p'].shape[0])
+            signal_efficiency_all = float(df_train[(df_train['prob'] > prob_threshold) & (df_train['class'] == 1     )].shape[0]) / float(df_train[df_train['class'] == 1     ].shape[0])
+            background_rejection  = float(df_train[(df_train['prob'] < prob_threshold) & (df_train['class'] == 0     )].shape[0]) / float(df_train[df_train['class'] == 0     ].shape[0])
             # Store scores
             sig_effs_all.append(signal_efficiency_all)
             sig_effs_mcp.append(signal_efficiency_mcp)
@@ -342,37 +338,30 @@ def main(args):
             eff = signal_efficiency_all
             a   = 5. # expected significance
             # Background events, scaled to 40MeV window about B peak, considering only those in X(3823) region
-            B = df_train[((df_train['prob_'+run] > prob_threshold)) & ((df_train['scaledmass'] > 5400.) & (df_train['scaledmass'] < 5450.)) & ((df_train['mjpipi'] > 3773) & (df_train['mjpipi'] < 3873))].shape[0] * .8
+            B = df_train[((df_train['prob'] > prob_threshold)) & ((df_train['scaledmass'] > 5400.) & (df_train['scaledmass'] < 5450.)) & ((df_train['mjpipi'] > 3773) & (df_train['mjpipi'] < 3873))].shape[0] * .8
             if s0 is not None:
                 cut_scores.append((s0 * eff) / sqrt((s0 * eff) + B))
             else:
                 cut_scores.append(eff / ((a / 2) + sqrt(B)))
         # Find optimal cut
-        if args.bck_cut:     # Hard cut at 99% background rejection
-            cut_index = np.argmax(np.array(bgr_rejs)>.99)       
-            print("Background used: {:.3f}".format(bgr_rejs[cut_index]))
-            prob_threshold = cuts[cut_index]
-        else:           # Base on cut optimisation metric
-            cut_index = np.argmax(cut_scores)
-            prob_threshold  = cuts[cut_index]
+        cut_index = np.argmax(cut_scores)
+        prob_threshold  = cuts[cut_index]
 
         ### Store some parameters of interest
-        d_run_info[run]['optimal_cut'] = np.asscalar(prob_threshold)
-        d_run_info[run]['all_signal_efficiency'] = sig_effs_all[cut_index]
-        d_run_info[run]['mcj_signal_efficiency'] = sig_effs_mcp[cut_index]
-        d_run_info[run]['mcx_signal_efficiency'] = sig_effs_mcx[cut_index]
-        d_roc_plot[run]['sig_effs'] = sig_effs_all
-        d_roc_plot[run]['bgr_rejs'] = bgr_rejs
+        d_info['optimal_cut'] = np.asscalar(prob_threshold)
+        d_info['all_signal_efficiency'] = sig_effs_all[cut_index]
+        d_info['mcp_signal_efficiency'] = sig_effs_mcp[cut_index]
+        d_info['mcx_signal_efficiency'] = sig_effs_mcx[cut_index]
         ### Print some summary stats
         print('   ***           Optimal cut: %1.2f ***'%(prob_threshold))
-        print('   ***     Signal efficiency: %1.2f ***'%(d_run_info[run]['all_signal_efficiency']))
-        print('   *** MCJ Signal efficiency: %1.2f ***'%(d_run_info[run]['mcj_signal_efficiency']))
-        print('   *** MCX Signal efficiency: %1.2f ***'%(d_run_info[run]['mcx_signal_efficiency']))
+        print('   ***     Signal efficiency: %1.2f ***'%(d_info['all_signal_efficiency']))
+        print('   *** MCP Signal efficiency: %1.2f ***'%(d_info['mcp_signal_efficiency']))
+        print('   *** MCX Signal efficiency: %1.2f ***'%(d_info['mcx_signal_efficiency']))
     else:
         prob_threshold = float(args.opt_cut)
 
     ### Apply model to data
-    df_data['class'] = df_data['prob_'+run] > prob_threshold
+    df_data['class'] = df_data['prob'] > prob_threshold
 
     ### Plot cut optimisation
     print('   *** Plotting cut optimisation ***')
@@ -381,7 +370,7 @@ def main(args):
     plt.ylabel("Cut Score")
     plt.xlabel("Probability Threshold")
     plt.xlim(0.,1.)
-    plt.title("Cut Score "+run)
+    plt.title("Cut Score")
     plt.tight_layout(pad=2.0)
     fig.savefig(out_path_plots+'cut_score.pdf')
     plt.close()
@@ -389,7 +378,7 @@ def main(args):
     ### Plot mass histogram for optimal cut
     print('   *** Plotting Mass histograms ***')
     # Initialise canvas
-    c_name = 'B_Mass_Distribution '+run
+    c_name = 'B_Mass_Distribution'
     c = ROOT.TCanvas(c_name, c_name, 600, 400)
     c.cd()
     # Select required quantity
@@ -403,7 +392,7 @@ def main(args):
     map(h_cut.Fill, a_cut)
     # Normalise
     ## Make it pretty
-    h_raw.SetTitle('B Mass Distribution '+run)
+    h_raw.SetTitle('B Mass Distribution')
     # Format for each case of x-axis
     h_raw.GetYaxis().SetTitleOffset(1.6)
     y_max = 1.1*max(h_raw.GetBinContent(h_raw.GetMaximumBin()), h_cut.GetBinContent(h_cut.GetMaximumBin()))
@@ -435,13 +424,13 @@ def main(args):
     ### BDT answer
     print('   *** Plotting classification probabilities ***')
     # Initialise canvas
-    c_name = 'BDT_Predicted_Probability '+run
+    c_name = 'BDT_Predicted_Probability'
     c = ROOT.TCanvas(c_name, c_name, 600, 400)
     c.cd()
     # Select required quantity
-    a_train_sig_prob = df_train['prob_'+run][df_train['class'] == 1].as_matrix()
-    a_train_bkg_prob = df_train['prob_'+run][df_train['class'] == 0].as_matrix()
-    a_data_prob      = df_data['prob_'+run].as_matrix()
+    a_train_sig_prob = df_train['prob'][df_train['class'] == 1].as_matrix()
+    a_train_bkg_prob = df_train['prob'][df_train['class'] == 0].as_matrix()
+    a_data_prob      = df_data['prob'].as_matrix()
     # Create and format histograms
     h_train_sig_prob = ROOT.TH1F(c_name+'_Sig_Prob' , c_name+'_Sig_Prob;Probability;Candidates', 100, 0., 1.)
     h_train_bkg_prob = ROOT.TH1F(c_name+'_Bkg_Prob' , c_name+'_Bkg_Prob;Probability;Candidates', 100, 0., 1.)
@@ -455,7 +444,7 @@ def main(args):
     h_train_bkg_prob.Scale(1./h_train_bkg_prob.Integral())
     h_data_prob     .Scale(1./h_data_prob     .Integral())
     ## Make it pretty
-    h_train_sig_prob.SetTitle('Event Probability Distribution '+run)
+    h_train_sig_prob.SetTitle('Event Probability Distribution')
     # Format for each case of x-axis
     h_train_sig_prob.GetYaxis().SetTitleOffset(1.6)
     y_max = 1.1*max(max(h_train_sig_prob.GetBinContent(h_train_sig_prob.GetMaximumBin()), h_train_bkg_prob.GetBinContent(h_train_bkg_prob.GetMaximumBin())), h_data_prob.GetBinContent(h_data_prob.GetMaximumBin()))
@@ -494,34 +483,25 @@ def main(args):
     out_path_var = out_path_plots+'dist_vars/'
     if not os.path.exists(out_path_var):
         os.makedirs(out_path_var)
-    for var in D_CONFIGS[run]['fit_vars'] + ['bplus_PT'] + ['prob_'+run]:
+    for var in l_fit_vars + ['prob']:
         # Initialise canvas
-        c_name = var+'_Distribution_'+run
+        c_name = var+'_Distribution'
         c = ROOT.TCanvas(c_name, c_name, 600, 400)
         c.cd()
         # Select required quantity
-        a_plt_sig = df_train[var][df_train['prob_'+run] >= prob_threshold].as_matrix()
-        a_plt_bkg = df_train[var][df_train['prob_'+run] <  prob_threshold].as_matrix()
-        # Scale DIRA and IPCHI2
-        i_str = ''
-        if (var=='bplus_DIRA_OWNPV'):
-            a_plt_sig = np.arccos(a_plt_sig)
-            a_plt_bkg = np.arccos(a_plt_bkg)
-            i_str = 'arccos '
-        if ('CHI2' in var):
-            a_plt_sig = np.log(a_plt_sig)
-            a_plt_bkg = np.log(a_plt_bkg)
-            i_str = 'log '
+        a_plt_sig = df_train[var][df_train['prob'] >= prob_threshold].as_matrix()
+        a_plt_bkg = df_train[var][df_train['prob'] <  prob_threshold].as_matrix()
+        
         # Create and format histograms
         x_max = max(max(a_plt_sig), max(a_plt_bkg))
         x_min = min(min(a_plt_sig), min(a_plt_bkg))
-        h_plt_sig = ROOT.TH1F(c_name+'_Sig', c_name+'_Sig;'+i_str+var+';candidates', 100, x_min, x_max)
-        h_plt_bkg = ROOT.TH1F(c_name+'_Bkg', c_name+'_Bkg;'+i_str+var+';candidates', 100, x_min, x_max)
+        h_plt_sig = ROOT.TH1F(c_name+'_Sig', c_name+'_Sig;'+var+';candidates', 100, x_min, x_max)
+        h_plt_bkg = ROOT.TH1F(c_name+'_Bkg', c_name+'_Bkg;'+var+';candidates', 100, x_min, x_max)
         # Fill histograms
         map(h_plt_sig.Fill, a_plt_sig)
         map(h_plt_bkg.Fill, a_plt_bkg)
         ## Make it pretty
-        h_plt_sig.SetTitle(var+' Distribution '+run)
+        h_plt_sig.SetTitle(var+' Distribution')
         # Format for each case of x-axis
         h_plt_sig.GetYaxis().SetTitleOffset(1.6)
         y_max = 1.1*max(h_plt_sig.GetBinContent(h_plt_sig.GetMaximumBin()), h_plt_bkg.GetBinContent(h_plt_bkg.GetMaximumBin()))
@@ -557,33 +537,22 @@ def main(args):
         print('   *** Plotting comparison to psi(2S) MC ***')
         df_data_comp = df_data[((df_data['mjpipi'] < 3696) & (df_data['mjpipi'] > 3676)) & ((df_data['scaledmass'] < 5299) & (df_data['scaledmass'] > 5259))]
         df_side_comp = df_side[ (df_side['mjpipi'] < 3696) & (df_side['mjpipi'] > 3676)]
-        for var in D_CONFIGS[run]['fit_vars'] + ['bplus_PT'] + ['prob_'+run]:
+        for var in fit_vars + ['prob']:
             # Initialise canvas
-            c_name = var+'_MC_#psi(2S)_Comparison_'+run
+            c_name = var+'_MC_#psi(2S)_Comparison'
             c = ROOT.TCanvas(c_name, c_name, 600, 400)
             c.cd()
             # Select required quantity
             a_mc_p = df_mc_p[var].as_matrix()
             a_data_comp = df_data_comp[var].as_matrix()
             a_side_comp = df_side_comp[var].as_matrix()
-            # Scale DIRA and IPCHI2
-            i_str = ''
-            if (var=='bplus_DIRA_OWNPV'):
-                a_mc_p = np.arccos(a_mc_p)
-                a_data_comp = np.arccos(a_data_comp)
-                a_side_comp = np.arccos(a_side_comp)
-                i_str = 'arccos '
-            #if ('CHI2' in var):
-            #    a_mc_p = np.log(a_mc_p)
-            #    a_data_comp = np.log(a_data_comp)
-            #    a_side_comp = np.log(a_side_comp)
-            #    i_str = 'log '
+            
             # Create and format histograms
             x_max = max(max(a_mc_p), max(a_data_comp))
             x_min = min(min(a_mc_p), min(a_data_comp))
-            h_mc_p = ROOT.TH1F(c_name+'_mc_#psi', c_name+'_mc_#psi;'+i_str+var+';candidates', 100, x_min, x_max)
-            h_comp = ROOT.TH1F(c_name+'_data'   , c_name+'_data;'+i_str+var+';candidates'   , 100, x_min, x_max)
-            h_side = ROOT.TH1F(c_name+'_side'   , c_name+'_side;'+i_str+var+';candidates'   , 100, x_min, x_max)
+            h_mc_p = ROOT.TH1F(c_name+'_mc_#psi', c_name+'_mc_#psi;'+var+';candidates', 100, x_min, x_max)
+            h_comp = ROOT.TH1F(c_name+'_data'   , c_name+'_data;'+var+';candidates'   , 100, x_min, x_max)
+            h_side = ROOT.TH1F(c_name+'_side'   , c_name+'_side;'+var+';candidates'   , 100, x_min, x_max)
             # Fill histograms
             map(h_mc_p.Fill, a_mc_p)
             map(h_comp.Fill, a_data_comp)
@@ -595,7 +564,7 @@ def main(args):
             h_comp.Scale(1./h_comp.Integral())
             h_side.Scale(1./h_side.Integral())
             ## Make it pretty
-            h_mc_p.SetTitle(var+' Data vs MC J(2S) Distribution '+run)
+            h_mc_p.SetTitle(var+' Data vs MC J(2S) Distribution')
             # Format for each case of x-axis
             h_mc_p.GetYaxis().SetTitleOffset(1.6)
             y_max = 1.1*max((h_mc_p.GetBinContent(h_mc_p.GetMaximumBin()), h_comp.GetBinContent(h_comp.GetMaximumBin()), h_side.GetBinContent(h_side.GetMaximumBin())))
@@ -636,9 +605,9 @@ def main(args):
         print('   *** Plotting comparison to X(3872) MC ***')
         df_data_comp = df_data[((df_data['mjpipi'] < 3882) & (df_data['mjpipi'] > 3862)) & ((df_data['scaledmass'] < 5299) & (df_data['scaledmass'] > 5259))]
         df_side_comp = df_side[ (df_side['mjpipi'] < 3882) & (df_side['mjpipi'] > 3862)]
-        for var in D_CONFIGS[run]['fit_vars'] + ['bplus_PT'] +['prob_'+run]:
+        for var in fit_vars + ['prob']:
             # Initialise canvas
-            c_name = var+'_MC_X(3872)_Comparison_'+run
+            c_name = var+'_MC_X(3872)_Comparison'
             c = ROOT.TCanvas(c_name, c_name, 600, 400)
             c.cd()
             # Select required quantity
@@ -646,23 +615,13 @@ def main(args):
             a_data_comp = df_data_comp[var].as_matrix()
             a_side_comp = df_side_comp[var].as_matrix()
             # Scale DIRA and IPCHI2
-            i_str = ''
-            if (var=='bplus_DIRA_OWNPV'):
-                a_mc_p = np.arccos(a_mc_p)
-                a_data_comp = np.arccos(a_data_comp)
-                a_side_comp = np.arccos(a_side_comp)
-                i_str = 'arccos '
-            if ('CHI2' in var):
-                a_mc_p = np.log(a_mc_p)
-                a_data_comp = np.log(a_data_comp)
-                a_side_comp = np.log(a_side_comp)
-                i_str = 'log '
+            
             # Create and format histograms
             x_max = max(max(a_mc_p), max(a_data_comp))
             x_min = min(min(a_mc_p), min(a_data_comp))
-            h_mc_p = ROOT.TH1F(c_name+'_mc_#psi', c_name+'_mc_#psi;'+i_str+var+';candidates', 100, x_min, x_max)
-            h_comp = ROOT.TH1F(c_name+'_data'   , c_name+'_data;'+i_str+var+';candidates'   , 100, x_min, x_max)
-            h_side = ROOT.TH1F(c_name+'_side'   , c_name+'_side;'+i_str+var+';candidates'   , 100, x_min, x_max)
+            h_mc_p = ROOT.TH1F(c_name+'_mc_#psi', c_name+'_mc_#psi;'+var+';candidates', 100, x_min, x_max)
+            h_comp = ROOT.TH1F(c_name+'_data'   , c_name+'_data;'+var+';candidates'   , 100, x_min, x_max)
+            h_side = ROOT.TH1F(c_name+'_side'   , c_name+'_side;'+var+';candidates'   , 100, x_min, x_max)
             # Fill histograms
             map(h_mc_p.Fill, a_mc_p)
             map(h_comp.Fill, a_data_comp)
@@ -674,7 +633,7 @@ def main(args):
             h_comp.Scale(1./h_comp.Integral())
             h_side.Scale(1./h_side.Integral())
             ## Make it pretty
-            h_mc_p.SetTitle(var+' Data vs MC X(3872) Distribution '+run)
+            h_mc_p.SetTitle(var+' Data vs MC X(3872) Distribution')
             # Format for each case of x-axis
             h_mc_p.GetYaxis().SetTitleOffset(1.6)
             y_max = 1.1*max((h_mc_p.GetBinContent(h_mc_p.GetMaximumBin()), h_comp.GetBinContent(h_comp.GetMaximumBin()), h_side.GetBinContent(h_side.GetMaximumBin())))
@@ -713,29 +672,21 @@ def main(args):
         if not os.path.exists(out_path_mc_mc):
             os.makedirs(out_path_mc_mc)
         print('   *** Plotting comparison of psi(2S) MC and X(3972) MC ***')
-        for var in D_CONFIGS[run]['fit_vars'] + ['bplus_PT'] + ['prob_'+run]:
+        for var in fit_vars + ['prob']:
             # Initialise canvas
-            c_name = var+'_MC_Comparison_'+run
+            c_name = var+'_MC_Comparison'
             c = ROOT.TCanvas(c_name, c_name, 600, 400)
             c.cd()
             # Select required quantity
             a_mc_p = df_mc_p[var].as_matrix()
             a_mc_x = df_mc_x[var].as_matrix()
             # Scale DIRA and IPCHI2
-            i_str = ''
-            if (var=='bplus_DIRA_OWNPV'):
-                a_mc_p = np.arccos(a_mc_p)
-                a_mc_x = np.arccos(a_mc_x)
-                i_str = 'arccos '
-            if ('CHI2' in var):
-                a_mc_p = np.log(a_mc_p)
-                a_mc_x = np.log(a_mc_x)
-                i_str = 'log '
+            
             # Create and format histograms
             x_max = max(max(a_mc_p), max(a_mc_x))
             x_min = min(min(a_mc_p), min(a_mc_x))
-            h_mc_p = ROOT.TH1F(c_name+'_mc_#psi', c_name+'_mc_#psi;'+i_str+var+';candidates', 100, x_min, x_max)
-            h_mc_x = ROOT.TH1F(c_name+'_mc_X'   , c_name+'_mc_X;'+i_str+var+';candidates'   , 100, x_min, x_max)
+            h_mc_p = ROOT.TH1F(c_name+'_mc_#psi', c_name+'_mc_#psi;'+var+';candidates', 100, x_min, x_max)
+            h_mc_x = ROOT.TH1F(c_name+'_mc_X'   , c_name+'_mc_X;'+var+';candidates'   , 100, x_min, x_max)
             # Fill histograms
             map(h_mc_p.Fill, a_mc_p)
             map(h_mc_x.Fill, a_mc_x)
@@ -743,7 +694,7 @@ def main(args):
             h_mc_p.Scale(1./h_mc_p.Integral())
             h_mc_x.Scale(1./h_mc_x.Integral())
             ## Make it pretty
-            h_mc_p.SetTitle(var+' MC X(3872) vs MC #psi(2S) Distribution '+run)
+            h_mc_p.SetTitle(var+' MC X(3872) vs MC #psi(2S) Distribution')
             # Format for each case of x-axis
             h_mc_p.GetYaxis().SetTitleOffset(1.6)
             y_max = 1.1*max(h_mc_p.GetBinContent(h_mc_p.GetMaximumBin()), h_mc_x.GetBinContent(h_mc_x.GetMaximumBin()))
@@ -779,35 +730,18 @@ def main(args):
         # Fit
         d_cut_fit = fit_doubleCB(a_cut_mc, a_cut_data, out_path_plots, s_info='cut_data_plot')
         # Store params
-        d_run_info[run]['cut_fit_params'] = d_cut_fit
+        d_info['cut_fit_params'] = d_cut_fit
         # Fit in X region only
         a_mc_x = df_train[df_train['cat']=='mc_x']['scaledmass'].as_matrix()
         a_data_x = df_data[(df_data['class'] == 1) & ((df_data['mjpipi'] > 3862) & (df_data['mjpipi'] < 3882))]['scaledmass'].as_matrix()
         d_sig_est = fit_doubleCB(a_mc_x, a_data_x, out_path_plots, s_info='x_signal_yield_est')
-        d_run_info[run]['x_reg_fit_params'] = d_sig_est
+        d_info['x_reg_fit_params'] = d_sig_est
 
         print(   '*** Estimated fitted signal efficiency: {:.3f} ***'.format(float(d_cut_fit['data_sig_yield'])/d_sig_est_alldata['data_sig_yield']))
 
-    print('*** Plotting ROC curve ***')
-    ### Plot ROC curve
-    fig = plt.figure()
-    for run in list(D_CONFIGS.keys()):
-        plt.plot(d_roc_plot[run]['bgr_rejs'], d_roc_plot[run]['sig_effs'], label=run)
-    plt.legend(loc=3)
-    plt.ylabel("Background Rejection")
-    plt.xlabel("Signal Efficiency")
-    plt.xlim(0.,1.)
-    plt.ylim(0.,1.)
-    plt.title("ROC Curve")
-    plt.tight_layout(pad=2.0)
-    fig.savefig(out_path+'ROC_curve.pdf')
-    plt.close()
-
     print('*** Dumping run information ***')
     with open(out_path + args.out_dict, 'w') as outfile:
-        yaml.dump(d_run_info, outfile, default_flow_style=False)
-    with open(out_path + 'roc_plot.yml', 'w') as outfile:
-        yaml.dump(d_roc_plot, outfile, default_flow_style=False)
+        yaml.dump(d_info, outfile, default_flow_style=False)
 
 
 if __name__ == "__main__":
@@ -818,7 +752,6 @@ if __name__ == "__main__":
     parser.add_argument("--out_dict" , "-q", default = 'run_info.yml'      , help = "dictionary summarising run information")
     parser.add_argument("--tree_name", "-t", default = "DecayTree"         , help = "input tree name")
     parser.add_argument("--find_s0"  , "-s", action  = 'store_true'        , help = "if specified, a fit will be made to estimate s0 for X(3823)")
-    parser.add_argument("--bck_cut"  , "-b", action  = 'store_true'        , help = "if specified, the optimal cut will be where background rejection reaches 99%")
     parser.add_argument("--opt_cut"  , "-r", default = None                , help = "if specified, skip optimisation and take this as the cut factor")
     args = parser.parse_args()
     main(args)
