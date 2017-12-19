@@ -22,9 +22,7 @@ def fit_doubleCB(a_mc_x, a_data, out_path, s_info=''):
     a_fit_data = a_data.astype(dtype=[('b_mass'   , np.float)])
     # Estimate sig/bkg yields
     max_yield_est = a_fit_data.shape[0]                         # max possible signal yield
-    print(a_fit_data['b_mass'] > 5350.)
-    exit()
-    bkg_yield_est = len(a_fit_data[a_fit_data > 5350.]) * 4.     # estimate background from sideband
+    bkg_yield_est = len(a_fit_data[a_fit_data['b_mass'] > 5350.]) * 4.     # estimate background from sideband
     # Create tree for fitting
     t_fit_data = root_numpy.array2tree(a_fit_data)
     t_fit_mc   = root_numpy.array2tree(a_fit_mc)
