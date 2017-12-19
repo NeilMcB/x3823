@@ -14,7 +14,7 @@ from math import sqrt
 from sklearn.cross_validation import StratifiedKFold
 ROOT.gROOT.SetBatch(True)
 
-def fit_doubleCB(a_mc_x, a_data, out_path, s_info=''):
+def fit_doubleCB(a_mc_x, a_data, out_path, s_info='', save_fig=True):
     # Initialise dictionary for storing fit info
     d_fit_info = {}
     # Format arrays
@@ -105,7 +105,8 @@ def fit_doubleCB(a_mc_x, a_data, out_path, s_info=''):
     frame_mc_pull.SetTitle("")
     frame_mc_pull.Draw()
     # Save canvas
-    c.SaveAs(out_path+s_info+'_FittedMassDistribution_MonteCarlo.pdf')
+    if save_fig:
+        c.SaveAs(out_path+s_info+'_FittedMassDistribution_MonteCarlo.pdf')
     # Store fit variables
     d_fit_info['mc_mean']     = mean_mc.getValV()
     d_fit_info['mc_mean_err'] = mean_mc.getError()
@@ -216,7 +217,8 @@ def fit_doubleCB(a_mc_x, a_data, out_path, s_info=''):
     frame_pull.SetTitle("")
     frame_pull.Draw()
     # Save plot
-    c.SaveAs(out_path+s_info+'_FittedMassDistribution_Data.pdf')
+    if save_fig:
+        c.SaveAs(out_path+s_info+'_FittedMassDistribution_Data.pdf')
     # Store fit variables
     d_fit_info['data_mean']     = mean.getValV()
     d_fit_info['data_mean_err'] = mean.getError()
@@ -333,7 +335,7 @@ def main(args):
                 # Apply cut to psi(2S) dataframe
                 df_data_p_cut = df_data_p[df_data_p['prob_'+run] > prob_threshold]
                 df_mc_p_cut = df_mc_p[df_mc_p['prob_'+run] > prob_threshold]
-                d_datap_fit_cut = fit_doubleCB(df_mc_p_cut['scaledmass'].as_matrix(), df_data_p_cut['scaledmass'].as_matrix(), out_path, s_info='psi(2S)_cut_est_{:.3f}'.format(prob_threshold))
+                d_datap_fit_cut = fit_doubleCB(df_mc_p_cut['scaledmass'].as_matrix(), df_data_p_cut['scaledmass'].as_matrix(), out_path, s_info='psi(2S)_cut_est_{:.3f}'.format(prob_threshold), save_fig=False)
                 # Determine how many predictions are correct
                 signal_efficiency_mcx    = float(df_train[(df_train['prob_'+run] > prob_threshold) & (df_train['cat']   == 'mc_x')].shape[0]) / float(df_train[df_train['cat']   == 'mc_x'].shape[0])
                 signal_efficiency_mcj    = float(df_train[(df_train['prob_'+run] > prob_threshold) & (df_train['cat']   == 'mc_p')].shape[0]) / float(df_train[df_train['cat']   == 'mc_p'].shape[0])
