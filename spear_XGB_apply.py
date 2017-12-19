@@ -294,8 +294,8 @@ def main(args):
     ### Estimate signal yield - all data
     d_sig_est_alldata = fit_doubleCB(pd.concat([df_mc_x, df_mc_p])['scaledmass'].as_matrix(), df_data['scaledmass'].as_matrix(), out_path, s_info='alldata_signal_est')
     ### Estimate signal yield - X region
-    s0 = None
-    if args.find_s0:
+    s0 = args.s0
+    if s0 is None:
         df_data_p = df_data[(df_data['mjpipi'] > 3676) & (df_data['mjpipi'] < 3696)]
         df_data_x = df_data[(df_data['mjpipi'] > 3862) & (df_data['mjpipi'] < 3882)]
         d_sig_est_p = fit_doubleCB(df_mc_p['scaledmass'].as_matrix(), df_data_p['scaledmass'].as_matrix(), out_path, s_info='psi(2S)_s0_est', )
@@ -339,10 +339,7 @@ def main(args):
             a   = 5. # expected significance
             # Background events, scaled to 40MeV window about B peak, considering only those in X(3823) region
             B = df_train[((df_train['prob'] > prob_threshold)) & ((df_train['scaledmass'] > 5400.) & (df_train['scaledmass'] < 5450.)) & ((df_train['mjpipi'] > 3773) & (df_train['mjpipi'] < 3873))].shape[0] * .8
-            if s0 is not None:
-                cut_scores.append((s0 * eff) / sqrt((s0 * eff) + B))
-            else:
-                cut_scores.append(eff / ((a / 2) + sqrt(B)))
+            cut_scores.append((s0 * eff) / sqrt((s0 * eff) + B))
         # Find optimal cut
         cut_index = np.argmax(cut_scores)
         prob_threshold  = cuts[cut_index]
@@ -537,7 +534,7 @@ def main(args):
         print('   *** Plotting comparison to psi(2S) MC ***')
         df_data_comp = df_data[((df_data['mjpipi'] < 3696) & (df_data['mjpipi'] > 3676)) & ((df_data['scaledmass'] < 5299) & (df_data['scaledmass'] > 5259))]
         df_side_comp = df_side[ (df_side['mjpipi'] < 3696) & (df_side['mjpipi'] > 3676)]
-        for var in fit_vars + ['prob']:
+        for var in l_fit_vars + ['prob']:
             # Initialise canvas
             c_name = var+'_MC_#psi(2S)_Comparison'
             c = ROOT.TCanvas(c_name, c_name, 600, 400)
@@ -605,7 +602,7 @@ def main(args):
         print('   *** Plotting comparison to X(3872) MC ***')
         df_data_comp = df_data[((df_data['mjpipi'] < 3882) & (df_data['mjpipi'] > 3862)) & ((df_data['scaledmass'] < 5299) & (df_data['scaledmass'] > 5259))]
         df_side_comp = df_side[ (df_side['mjpipi'] < 3882) & (df_side['mjpipi'] > 3862)]
-        for var in fit_vars + ['prob']:
+        for var in l_fit_vars + ['prob']:
             # Initialise canvas
             c_name = var+'_MC_X(3872)_Comparison'
             c = ROOT.TCanvas(c_name, c_name, 600, 400)
@@ -672,7 +669,7 @@ def main(args):
         if not os.path.exists(out_path_mc_mc):
             os.makedirs(out_path_mc_mc)
         print('   *** Plotting comparison of psi(2S) MC and X(3972) MC ***')
-        for var in fit_vars + ['prob']:
+        for var in l_fit_vars + ['prob']:
             # Initialise canvas
             c_name = var+'_MC_Comparison'
             c = ROOT.TCanvas(c_name, c_name, 600, 400)
@@ -746,11 +743,11 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "--add description--")
-    parser.add_argument("data_dir"   ,       default = None                , help = "directory containing trained root files")
-    parser.add_argument("--out_path" , "-o", default = 'results/'          , help = "directory for storing results")
-    parser.add_argument("--out_dict" , "-q", default = 'run_info.yml'      , help = "dictionary summarising run information")
-    parser.add_argument("--tree_name", "-t", default = "DecayTree"         , help = "input tree name")
-    parser.add_argument("--find_s0"  , "-s", action  = 'store_true'        , help = "if specified, a fit will be made to estimate s0 for X(3823)")
-    parser.add_argument("--opt_cut"  , "-r", default = None                , help = "if specified, skip optimisation and take this as the cut factor")
+    parser.add_argument("data_dir"   ,       default = None           , help = "directory containing trained root files")
+    parser.add_argument("--out_path" , "-o", default = 'results/'     , help = "directory for storing results")
+    parser.add_argument("--out_dict" , "-q", default = 'run_info.yml' , help = "dictionary summarising run information")
+    parser.add_argument("--tree_name", "-t", default = "DecayTree"    , help = "input tree name")
+    parser.add_argument("--s0"       , "-s", default = None           , help = "if not specified, a fit will be made to estimate s0 for X(3823)")
+    parser.add_argument("--opt_cut"  , "-r", default = None           , help = "if specified, skip optimisation and take this as the cut factor")
     args = parser.parse_args()
     main(args)
