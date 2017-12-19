@@ -31,7 +31,7 @@ void finalize(TTree* cutTree, TFile* output){
 }
 
 /* Now the main business */
-string preprocess(std::string fileName, std::string treeName = "DecayTree", std::string trailer = "_cut.root"){
+string preprocess(string fileName, bool sideband = false, string trailer = "_cut.root", string treeName = "DecayTree"){
 
   // get the input
   TChain* decaytree = new TChain(treeName.c_str());
@@ -50,7 +50,7 @@ string preprocess(std::string fileName, std::string treeName = "DecayTree", std:
   string cutString1 = "(mjpipi - 3096.90 - mpipi < 500)";                               // Q factor
   string cutString2 = "(!(((mppp > 5264) && (mppp < 5294)) && (kaon_ProbNNpi > 0.4)))"; // Kaon -> Pion misidentification in B mass region  
   string cutString3 = "(!((scaledmass > 5400) && ((mjpk > 5264) && (mjpk < 5294))))";   // Remove B -> J/psi K* signal from upper sideband  
-  string cutString4 = "(scaledmass < 5400)";                                            // Remove sideband
+  string cutString4 = sideband ? "" : "(scaledmass < 5400)"                             // Remove sideband
   string cutString  = cutString1 + " && " + cutString2 + " && " + cutString3 + " && " + cutString4; // Combine
   // apply to data
   TCut cut = cutString.c_str();

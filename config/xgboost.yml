@@ -1,5 +1,5 @@
 final_selection:
-  fit_vars: [bplus_DIRA_OWNPV, bplus_IPCHI2_OWNPV, bplus_LOKI_DTF_CHI2NDOF, bplus_FDCHI2_OWNPV, bplus_ETA, pion1_IPCHI2_OWNPV, pion2_IPCHI2_OWNPV, kaon_IPCHI2_OWNPV, muplus_IPCHI2_OWNPV, muminus_IPCHI2_OWNPV, muplus_PT, muminus_PT]
+  fit_vars: [logDIRA, log_bplus_IPCHI2_OWNPV, bplus_LOKI_DTF_CHI2NDOF, log_bplus_FDCHI2_OWNPV, bplus_ETA, log_1_IPCHI2_OWNPV, log_2_IPCHI2_OWNPV, log_3_IPCHI2_OWNPV, log_4_IPCHI2_OWNPV, log_5_IPCHI2_OWNPV, mu_PT_max, mu_PT_min]
   max_depth: 6
   n_estimators: 600  
   learning_rate: 0.1
