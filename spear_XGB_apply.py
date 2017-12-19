@@ -259,7 +259,7 @@ def main(args):
                   'log_1_IPCHI2_OWNPV', 'log_2_IPCHI2_OWNPV', 'log_3_IPCHI2_OWNPV', 'log_4_IPCHI2_OWNPV', 'log_5_IPCHI2_OWNPV', 
                   'mu_PT_max', 'mu_PT_min']
     l_mass_vars = ['scaledmass', 'mjpipi']
-    l_load_branches = l_fit_vars + l_mass_vars
+    l_load_branches = l_fit_vars + l_mass_vars + ['prob']
     # Load files into arrays
     print('*** Loading Data ***')
     a_mc_x = root_numpy.root2array(args.data_dir+'mc_x_proba.root', treename = args.tree_name, branches = l_load_branches)
@@ -748,7 +748,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = "--add description--")
     parser.add_argument("data_dir"   ,       default = None                , help = "directory containing trained root files")
     parser.add_argument("--out_path" , "-o", default = 'results/'          , help = "directory for storing results")
-    parser.add_argument("--config"   , "-c", default = 'config/xgboost.yml', help = "config file")
     parser.add_argument("--out_dict" , "-q", default = 'run_info.yml'      , help = "dictionary summarising run information")
     parser.add_argument("--tree_name", "-t", default = "DecayTree"         , help = "input tree name")
     parser.add_argument("--find_s0"  , "-s", action  = 'store_true'        , help = "if specified, a fit will be made to estimate s0 for X(3823)")
