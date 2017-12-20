@@ -309,6 +309,8 @@ def main(args):
     
     d_info = {}
 
+    d_info['raw_fit_params'] = d_sig_est_alldata
+
     out_path_plots = out_path+'plots/'
     if not os.path.exists(out_path_plots):
         os.makedirs(out_path_plots)
@@ -730,12 +732,14 @@ def main(args):
         # Store params
         d_info['cut_fit_params'] = d_cut_fit
         # Fit in X region only
-        a_mc_x = df_train[df_train['cat']=='mc_x']['scaledmass'].as_matrix()
-        a_data_x = df_data[(df_data['class'] == 1) & ((df_data['mjpipi'] > 3862) & (df_data['mjpipi'] < 3882))]['scaledmass'].as_matrix()
-        d_sig_est = fit_doubleCB(a_mc_x, a_data_x, out_path_plots, s_info='x_signal_yield_est')
-        d_info['x_reg_fit_params'] = d_sig_est
-
-        print(   '*** Estimated fitted signal efficiency: {:.3f} ***'.format(float(d_cut_fit['data_sig_yield'])/d_sig_est_alldata['data_sig_yield']))
+        #a_mc_x = df_train[df_train['cat']=='mc_x']['scaledmass'].as_matrix()
+        #a_data_x = df_data[(df_data['class'] == 1) & ((df_data['mjpipi'] > 3862) & (df_data['mjpipi'] < 3882))]['scaledmass'].as_matrix()
+        #d_sig_est = fit_doubleCB(a_mc_x, a_data_x, out_path_plots, s_info='x_signal_yield_est')
+        #d_info['x_reg_fit_params'] = d_sig_est
+        # Estimate signal efficiency in the data
+        est_data_eff = float(d_cut_fit['data_sig_yield'])/d_sig_est_alldata['data_sig_yield']
+        d_info['estimated_data_efficiency'] = est_data_eff
+        print(   '*** Estimated fitted signal efficiency: {:.3f} ***'.format(est_data_eff))
 
     print('*** Dumping run information ***')
     with open(out_path + args.out_dict, 'w') as outfile:
