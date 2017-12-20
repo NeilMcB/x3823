@@ -407,8 +407,8 @@ def main(args):
     h_raw.SetStats(False)
     h_cut.SetStats(False)
     # Print
-    h_raw.Draw('HIST')
-    h_cut.Draw('HISTsame')
+    h_raw.Draw('E0HIST')
+    h_cut.Draw('E0HISTsame')
     # Create legend
     leg = ROOT.TLegend(0.6,0.75,0.9,0.9)
     leg.AddEntry(h_raw, 'Uncut Data', 'L')
@@ -462,9 +462,9 @@ def main(args):
     h_train_bkg_prob.SetStats(False)
     h_data_prob.SetStats(False)
     # Print
-    h_train_sig_prob.Draw('HIST')
-    h_train_bkg_prob.Draw('HISTsame')
-    h_data_prob     .Draw('HISTsame')
+    h_train_sig_prob.Draw('E0HIST')
+    h_train_bkg_prob.Draw('E0HISTsame')
+    h_data_prob     .Draw('E0HISTsame')
     # Create legend
     leg = ROOT.TLegend(0.6,0.75,0.9,0.9)
     leg.AddEntry(h_train_sig_prob, 'Training Signal Events'    , 'L')
@@ -516,8 +516,8 @@ def main(args):
         h_plt_sig.SetStats(False)
         h_plt_bkg.SetStats(False)
         # Print
-        h_plt_sig.Draw('HIST')
-        h_plt_bkg.Draw('HISTsame')
+        h_plt_sig.Draw('E0HIST')
+        h_plt_bkg.Draw('E0HISTsame')
         # Create legend
         leg = ROOT.TLegend(0.6,0.75,0.9,0.9)
         leg.AddEntry(h_plt_sig, 'Training Events Identified as Signal', 'L')
@@ -582,9 +582,9 @@ def main(args):
             h_comp.SetStats(False)
             h_side.SetStats(False)
             # Print
-            h_mc_p.Draw('HIST')
-            h_comp.Draw('HISTsame')
-            h_side.Draw('HISTsame')
+            h_mc_p.Draw('E0HIST')
+            h_comp.Draw('E0HISTsame')
+            h_side.Draw('E0HISTsame')
             # Create legend
             leg = ROOT.TLegend(0.6,0.75,0.9,0.9)
             leg.AddEntry(h_mc_p, '#psi(2S) Monte-Carlo', 'L')
@@ -651,9 +651,9 @@ def main(args):
             h_comp.SetStats(False)
             h_side.SetStats(False)
             # Print
-            h_mc_p.Draw('HIST')
-            h_comp.Draw('HISTsame')
-            h_side.Draw('HISTsame')
+            h_mc_p.Draw('E0HIST')
+            h_comp.Draw('E0HISTsame')
+            h_side.Draw('E0HISTsame')
             # Create legend
             leg = ROOT.TLegend(0.6,0.75,0.9,0.9)
             leg.AddEntry(h_mc_p, 'X(3872) Monte-Carlo', 'L')
@@ -709,8 +709,8 @@ def main(args):
             h_mc_p.SetStats(False)
             h_mc_x.SetStats(False)
             # Print
-            h_mc_p.Draw('HIST')
-            h_mc_x.Draw('HISTsame')
+            h_mc_p.Draw('E0HIST')
+            h_mc_x.Draw('E0HISTsame')
             # Create legend
             leg = ROOT.TLegend(0.6,0.75,0.9,0.9)
             leg.AddEntry(h_mc_p, '#psi(2S) Monte-Carlo', 'L')
