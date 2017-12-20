@@ -345,9 +345,9 @@ void fitData2CB(std::string filename="../../data/data_cut.root",
     RooRealVar* mx    = new RooRealVar("mx"   , "mx"   , mval, mval-20., mval+20.);
     RooRealVar* width = new RooRealVar("width", "width", wval,    0.01, 5*wval); width->setConstant(true);
     // Variables for DCB shape
-    RooRealVar* f  = new RooRealVar("f" , "f" , fval, 0., 1.); f->setConstant(fixf);
-    RooRealVar* s1 = new RooRealVar("s1", "s1", 2., 1., 5.);  s1->setConstant(true); // Take from data
-    RooRealVar* s2 = new RooRealVar("s2", "s2", 3., 1., 5.);  s2->setConstant(true); // Take from data
+    RooRealVar* f  = new RooRealVar("f" , "f" , 0.62, 0., 1.); f ->setConstant(true);
+    RooRealVar* s1 = new RooRealVar("s1", "s1", 1.86, 1., 5.); s1->setConstant(true); // Take from data
+    RooRealVar* s2 = new RooRealVar("s2", "s2", 3.15, 1., 5.); s2->setConstant(true); // Take from data
     RooRealVar* sc = new RooRealVar("sc", "sc", 1., 0., 2.);  // Scaling factor
     RooFormulaVar* sc_s1 = new RooFormulaVar("sc_s1", "sc_s1", "sc*s1", RooArgSet(*s1, *sc));
     RooFormulaVar* sc_s2 = new RooFormulaVar("sc_s2", "sc_s2", "sc*s2", RooArgSet(*s2, *sc));
