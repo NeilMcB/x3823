@@ -26,7 +26,7 @@ using namespace RooFit;
 void fitMCpsi2CB(std::string filename="../data/mcpsi_Qcut_vetos.root", 
                  std::string treename="DecayTree", std::string mbranch="mjpipi",
                  double minmass = 3666., double maxmass = 3706.,
-                 double fval  = 0.7    , bool fixf  = true,   
+                 double fval  = 0.7    , bool fixf  = false,   
                  int nbins = 10000     , double buff = 0.5){
 
     // Load missing packages
@@ -61,7 +61,7 @@ void fitMCpsi2CB(std::string filename="../data/mcpsi_Qcut_vetos.root",
     RooRealVar* mx    = new RooRealVar("mx"   , "mx"   , mval, mval-20., mval+20.);
     RooRealVar* width = new RooRealVar("width", "width", wval,    0.01, 5*wval); width->setConstant(true);
     // Variables for DCB shape
-    RooRealVar* f  = new RooRealVar("f" , "f" , fval, 0., 1.);
+    RooRealVar* f  = new RooRealVar("f" , "f" , fval, 0., 1.); f->setConstant(fixf);
     RooRealVar* s1 = new RooRealVar("s1", "s1", 2., 1., 5.);
     RooRealVar* s2 = new RooRealVar("s2", "s2", 3., 1., 5.);
     RooRealVar* n1 = new RooRealVar("n1", "n1", 1.); n1->setConstant(true); // We expect this value from QED
@@ -167,7 +167,7 @@ void fitMCpsi2CB(std::string filename="../data/mcpsi_Qcut_vetos.root",
 void fitMCx38722CB(std::string filename="../data/mcx_Qcut_vetos.root", 
                    std::string treename="DecayTree", std::string mbranch="mjpipi",
                    double minmass = 3852., double maxmass = 3892.,
-                   double fval  = 0.7    , bool fixf  = true,   
+                   double fval  = 0.7    , bool fixf  = false,   
                    int nbins = 10000, double buff = 0.5){
 
     // Load missing packages
@@ -202,7 +202,7 @@ void fitMCx38722CB(std::string filename="../data/mcx_Qcut_vetos.root",
     RooRealVar* mx    = new RooRealVar("mx"   , "mx"   , mval, mval-20., mval+20.);
     RooRealVar* width = new RooRealVar("width", "width", wval,    0.01, 5*wval); width->setConstant(true);
     // Variables for DCB shape
-    RooRealVar* f  = new RooRealVar("f" , "f" , fval, 0., 1.);
+    RooRealVar* f  = new RooRealVar("f" , "f" , fval, 0., 1.); f->setConstant(fixf);
     RooRealVar* s1 = new RooRealVar("s1", "s1", 2., 1., 5.);
     RooRealVar* s2 = new RooRealVar("s2", "s2", 3., 1., 5.);
     RooRealVar* n1 = new RooRealVar("n1", "n1", 1.); n1->setConstant(true); // We expect this value from QED
