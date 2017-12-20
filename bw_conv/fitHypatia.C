@@ -425,7 +425,7 @@ void fitDatahyp(std::string fittype="2CB", std::string resname="psi2S",
 }
 
 
-void fitDatahyp(std::string fittype="2CB", std::string resname="psi2S", 
+void fitX3823hyp(std::string fittype="2CB", std::string resname="psi2S", 
                 std::string filename="../data/data_Qcut_vetos.root", 
                 std::string treename="DecayTree", std::string mbranch="mjpipi",
                 double minmass = 3666., double maxmass = 3706.,
