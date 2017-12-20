@@ -23,7 +23,7 @@
 
 using namespace RooFit;
 
-void fitMCpsi2CB(std::string filename="../data/mcpsi_Qcut_vetos.root", 
+void fitMCpsi2CB(std::string filename="../../data/mcpsi_cut.root", 
                  std::string treename="DecayTree", std::string mbranch="mjpipi",
                  double minmass = 3666., double maxmass = 3706.,
                  double fval  = 0.7    , bool fixf  = false,   
@@ -164,7 +164,7 @@ void fitMCpsi2CB(std::string filename="../data/mcpsi_Qcut_vetos.root",
 }
 
 
-void fitMCx38722CB(std::string filename="../data/mcx_Qcut_vetos.root", 
+void fitMCx38722CB(std::string filename="../../data/mcx_cut.root", 
                    std::string treename="DecayTree", std::string mbranch="mjpipi",
                    double minmass = 3852., double maxmass = 3892.,
                    double fval  = 0.7    , bool fixf  = false,   
@@ -304,7 +304,7 @@ void fitMCx38722CB(std::string filename="../data/mcx_Qcut_vetos.root",
     can1->SaveAs("resolution_fit_x_2CB.pdf");
 }
 
-void fitData2CB(std::string filename="../data/data_Qcut_vetos.root", 
+void fitData2CB(std::string filename="../../data/data_cut.root", 
                 std::string treename="DecayTree", std::string mbranch="mjpipi",
                 double minmass = 3666., double maxmass = 3706.,
                 double fval  = 0.7    , bool fixf  = true,   
@@ -460,7 +460,7 @@ void fitData2CB(std::string filename="../data/data_Qcut_vetos.root",
 }
 
 
-void fitX38232CB(std::string filename="../data/data_Qcut_vetos.root", 
+void fitX38232CB(std::string filename="../../data/data_cut.root", 
                  std::string treename="DecayTree", std::string mbranch="mjpipi",
                  double minmass = 3666., double maxmass = 3706.,   // ??? find defined mass range
                  int nbins = 10000, double buff = 0.5){
