@@ -494,14 +494,14 @@ void fitX38232CB(std::string filename="../../data/data_cut.root",
     RooRealVar* hi  = new RooRealVar("hi" , "hi" , bhi);  
     RooRealVar* low = new RooRealVar("low", "low", blow);
     // Mass and Width to fit  
-    RooRealVar* mx    = new RooRealVar("mx"   , "mx"   , mval, mval-20., mval+20.); mval->setConstant(false);
+    RooRealVar* mx    = new RooRealVar("mx"   , "mx"   , mval, mval-20., mval+20.); mx->setConstant(false);
     RooRealVar* width = new RooRealVar("width", "width", wval,    0., 5*wval); width->setConstant(false);
     // Variables for DCB shape - take from MC and interpolation
-    RooRealVar* f  = new RooRealVar("f" , "f" , fval, 0., 1.); f->setConstant(fixf);
-    RooRealVar* s1 = new RooRealVar("s1", "s1", 2., 1., 5.);   s1->setConstant(true); // Take from data
-    RooRealVar* s2 = new RooRealVar("s2", "s2", 3., 1., 5.);   s2->setConstant(true); // Take from data
-    RooRealVar* n1 = new RooRealVar("n1", "n1", 1.);           n1->setConstant(true); // We expect this value from QED
-    RooRealVar* n2 = new RooRealVar("n2", "n2", 1.15459e+00);  n2->setConstant(true);
+    RooRealVar* f  = new RooRealVar("f" , "f" , 0.7, 0., 1.); f ->setConstant(true);
+    RooRealVar* sc_s1 = new RooRealVar("sc_s1", "sc_s1", 2., 1., 5.);  sc_s1->setConstant(true); // Take from data
+    RooRealVar* sc_s2 = new RooRealVar("sc_s2", "sc_s2", 3., 1., 5.);  sc_s2->setConstant(true); // Take from data
+    RooRealVar* n1 = new RooRealVar("n1", "n1", 1.);          n1->setConstant(true); // We expect this value from QED
+    RooRealVar* n2 = new RooRealVar("n2", "n2", 1.15459e+00); n2->setConstant(true);
     RooRealVar* a1 = new RooRealVar("a1", "a1", 2., .5, 10.);
     RooRealVar* a2 = new RooRealVar("a2", "a2", 3., .5, 10.);
     // Variables for exp background
@@ -559,7 +559,7 @@ void fitX38232CB(std::string filename="../../data/data_cut.root",
     pad1->cd();
     // Plot data and model
     data->plotOn(mframe, Binning(50));
-    bgrmodel->plotOn(mframe, LineColor(3))
+    bgrmodel->plotOn(mframe, LineColor(3));
     fitmodel->plotOn(mframe, LineColor(2));
     // Format plot
     mframe->SetTitle("");
