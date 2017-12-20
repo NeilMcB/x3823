@@ -206,7 +206,7 @@ void fitMCx38722CB(std::string filename="../../data/mcx_cut.root",
     RooRealVar* s1 = new RooRealVar("s1", "s1", 2., 1., 5.);
     RooRealVar* s2 = new RooRealVar("s2", "s2", 3., 1., 5.);
     RooRealVar* n1 = new RooRealVar("n1", "n1", 1.); n1->setConstant(true); // We expect this value from QED
-    RooRealVar* n2 = new RooRealVar("n2", "n2", 1.15, .5, 10.); n2->setConstant(true); // Fixing from psi(2S)
+    RooRealVar* n2 = new RooRealVar("n2", "n2", 1.15, .5, 10.); n2->setConstant(false); // Fixing from psi(2S)
     RooFormulaVar* a1  = new RooFormulaVar("a1", "a1", "2.48*pow(59.5 * s1, 10.5)/(1 + pow(59.5 * s1 , 10.5))", RooArgSet(*s1));
     RooFormulaVar* a2  = new RooFormulaVar("a2", "a2", "2.48*pow(59.5 * s2, 10.5)/(1 + pow(59.5 * s2 , 10.5))", RooArgSet(*s2));
     // Vars for Breit-Wigner
