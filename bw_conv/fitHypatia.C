@@ -202,9 +202,9 @@ void fitMCx3872hyp(std::string fittype="2CB", std::string resname="psi2S",
     RooRealVar* L    = new RooRealVar("L"   , "L"   , -2.32859e+00, -6., 2.);
     RooRealVar* beta = new RooRealVar("beta", "beta", 0.); beta->setConstant(true);
     RooRealVar* zeta = new RooRealVar("zeta", "zeta", 0.); zeta->setConstant(true);
-    RooRealVar* a1   = new RooRealVar("a1"  , "a1"  , 1.093, 0., 10.); a1->setConstant(true);
+    RooRealVar* a1   = new RooRealVar("a1"  , "a1"  , 0.917, 0., 10.); a1->setConstant(true);
     RooRealVar* n1   = new RooRealVar("n1"  , "n1"  , 1.96973, 0., 10.);
-    RooRealVar* a2   = new RooRealVar("a2"  , "a2"  , 1.416, 0., 10.); a2->setConstant(true);
+    RooRealVar* a2   = new RooRealVar("a2"  , "a2"  , 5.040, 0., 10.); a2->setConstant(true);
     RooRealVar* n2   = new RooRealVar("n2"  , "n2"  , 2.34662, 0., 20.);
     // Vars for Breit-Wigner
     RooRealVar* ma = new RooRealVar("ma", "ma", 3096.916);
