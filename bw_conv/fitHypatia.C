@@ -31,7 +31,7 @@ void load_dicts(){
 }
 
 void fitMCpsihyp(std::string fittype="2CB",
-                  std::string filename="../data/mcpsi_Qcut_vetos.root", 
+                  std::string filename="../../data/mcpsi_cut.root", 
                   std::string treename="DecayTree", std::string mbranch="mjpipi",
                   double minmass = 3666., double maxmass = 3706.,
                   bool fixWidth = false,
@@ -160,7 +160,7 @@ void fitMCpsihyp(std::string fittype="2CB",
 }
 
 void fitMCx3872hyp(std::string fittype="2CB", std::string resname="psi2S", 
-                  std::string filename="../data/mcx_Qcut_vetos.root", 
+                  std::string filename="../../data/mcx_cut.root", 
                   std::string treename="DecayTree", std::string mbranch="mjpipi",
                   double minmass = 3852., double maxmass = 3892.,
                   int nbins = 10000, double buff = 0.5){
@@ -289,7 +289,7 @@ void fitMCx3872hyp(std::string fittype="2CB", std::string resname="psi2S",
 
 
 void fitDatahyp(std::string fittype="2CB", std::string resname="psi2S", 
-                std::string filename="../data/data_Qcut_vetos.root", 
+                std::string filename="../../data/data_cut.root", 
                 std::string treename="DecayTree", std::string mbranch="mjpipi",
                 double minmass = 3666., double maxmass = 3706.,
                 int nbins = 10000, double buff = 0.5){
@@ -426,7 +426,7 @@ void fitDatahyp(std::string fittype="2CB", std::string resname="psi2S",
 
 
 void fitX3823hyp(std::string fittype="2CB", std::string resname="psi2S", 
-                std::string filename="../data/data_Qcut_vetos.root", 
+                std::string filename="../../data/data_cut.root", 
                 std::string treename="DecayTree", std::string mbranch="mjpipi",
                 double minmass = 3666., double maxmass = 3706.,
                 int nbins = 10000, double buff = 0.5){
